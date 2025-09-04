@@ -3,54 +3,328 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Inventory Tracker</title>
+  <title>Cannabis Inventory Tracker</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    video { width: 100%; max-width: 420px; border: 1px solid #ccc; margin-bottom: 10px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    button { margin-top: 10px; padding: 8px 12px; font-size: 16px; }
-    #scanner-container { display: flex; flex-direction: column; align-items: center; }
-    input { padding: 6px; margin-top: 6px; width: 220px; }
-    .row { display: flex; gap: 10px; flex-wrap: wrap; }
-    .error { color: #b00020; font-weight: bold; }
-    .ok { color: #2e7d32; font-weight: bold; }
-    .muted { color: #999; }
-    .action-btn { margin: 2px; padding: 4px 8px; font-size: 14px; }
+    :root {
+      --primary-green: #2e7d32;
+      --dark-green: #1b5e20;
+      --light-green: #4caf50;
+      --accent-gold: #ffd700;
+      --light-beige: #f5f5dc;
+      --dark-text: #333;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9f5;
+      color: var(--dark-text);
+      background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 50L70 30L50 10L30 30L50 50Z' fill='%232e7d32' fill-opacity='0.03'/%3E%3C/svg%3E");
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    header {
+      background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+      padding: 15px 0;
+      border-bottom: 3px solid var(--accent-gold);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    header::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 30L45 15L30 0L15 15L30 30Z' fill='%23ffd700' fill-opacity='0.1'/%3E%3C/svg%3E");
+      z-index: 0;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 28px;
+      font-weight: bold;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+      z-index: 1;
+      position: relative;
+    }
+    
+    .logo::before {
+      content: "🍃";
+      margin-right: 10px;
+      font-size: 32px;
+    }
+    
+    .logo::after {
+      content: "🍃";
+      margin-left: 10px;
+      font-size: 32px;
+    }
+    
+    h1 {
+      color: var(--primary-green);
+      text-align: center;
+      margin: 20px 0;
+      font-size: 32px;
+      position: relative;
+      padding-bottom: 10px;
+    }
+    
+    h1::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary-green), var(--accent-gold), var(--primary-green));
+    }
+    
+    .card {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin-bottom: 25px;
+      border-left: 4px solid var(--primary-green);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .card::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 60px;
+      height: 60px;
+      background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20L30 10L20 0L10 10L20 20Z' fill='%232e7d32' fill-opacity='0.1'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: top right;
+    }
+    
+    video {
+      width: 100%;
+      max-width: 420px;
+      border: 2px solid var(--primary-green);
+      border-radius: 8px;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    th {
+      background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+      color: white;
+      padding: 12px 15px;
+      text-align: left;
+    }
+    
+    td {
+      padding: 10px 15px;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #f8f9f5;
+    }
+    
+    tr:hover {
+      background-color: rgba(46, 125, 50, 0.05);
+    }
+    
+    button {
+      background: linear-gradient(to bottom, var(--primary-green), var(--dark-green));
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 18px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      margin: 5px;
+      font-weight: 600;
+    }
+    
+    button:hover {
+      background: linear-gradient(to bottom, var(--dark-green), var(--primary-green));
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    button:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    #scanner-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    input {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      width: 220px;
+      font-size: 16px;
+      border: 2px solid var(--primary-green);
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: var(--accent-gold);
+      box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.2);
+    }
+    
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 15px 0;
+    }
+    
+    .error {
+      color: #b00020;
+      font-weight: bold;
+      padding: 10px;
+      background-color: #ffebee;
+      border-radius: 6px;
+      border-left: 4px solid #b00020;
+    }
+    
+    .ok {
+      color: #2e7d32;
+      font-weight: bold;
+      padding: 10px;
+      background-color: #e8f5e9;
+      border-radius: 6px;
+      border-left: 4px solid #2e7d32;
+    }
+    
+    .muted {
+      color: #666;
+      font-style: italic;
+    }
+    
+    .action-btn {
+      margin: 2px;
+      padding: 6px 12px;
+      font-size: 14px;
+      background: linear-gradient(to bottom, #666, #444);
+    }
+    
+    .action-btn:hover {
+      background: linear-gradient(to bottom, #444, #666);
+    }
+    
+    .leaf-decoration {
+      text-align: center;
+      margin: 20px 0;
+      font-size: 24px;
+      color: var(--primary-green);
+      opacity: 0.7;
+    }
+    
+    footer {
+      text-align: center;
+      padding: 20px;
+      margin-top: 40px;
+      color: #666;
+      border-top: 1px solid #ddd;
+      background-color: #f8f9f5;
+    }
+    
+    @media (max-width: 768px) {
+      .row {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      button {
+        width: 100%;
+        max-width: 300px;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>📦 Inventory Tracker</h1>
+  <header>
+    <div class="logo">CANNABIS INVENTORY TRACKER</div>
+  </header>
+  
+  <div class="container">
+    <h1>Inventory Management</h1>
+    
+    <div class="card">
+      <div id="scanner-container">
+        <video id="video" autoplay playsinline muted></video>
+        <p id="scan-result" class="muted">Scan a product barcode…</p>
+        <div class="row">
+          <button id="start-cam">Start Camera</button>
+          <button id="stop-cam">Stop Camera</button>
+          <button id="add-btn" disabled>Add to Inventory</button>
+        </div>
 
-  <div id="scanner-container">
-    <video id="video" autoplay playsinline muted></video>
-    <p id="scan-result" class="muted">Scan a barcode…</p>
-    <div class="row">
-      <button id="start-cam">Start Camera</button>
-      <button id="stop-cam">Stop Camera</button>
-      <button id="add-btn" disabled>Add to Inventory</button>
+        <p class="muted">Manual barcode entry:</p>
+        <div class="row">
+          <input type="text" id="manual-barcode" placeholder="Enter barcode" />
+          <button id="manual-add-btn">Use This Barcode</button>
+        </div>
+      </div>
     </div>
 
-    <p class="muted">Manual barcode entry (fallback):</p>
-    <div class="row">
-      <input type="text" id="manual-barcode" placeholder="Enter barcode" />
-      <button id="manual-add-btn">Use This Barcode</button>
+    <div class="card">
+      <div class="row">
+        <button id="load-btn">📋 Load Inventory</button>
+        <button id="ping-btn">🔎 Ping API</button>
+      </div>
+      <div id="inventory"></div>
     </div>
-  </div>
 
-  <div class="row">
-    <button id="load-btn">📋 Load Inventory</button>
-    <button id="ping-btn">🔎 Ping API</button>
+    <p id="status"></p>
+    
+    <div class="leaf-decoration">🍃 🌿 🍃 🌿 🍃</div>
   </div>
-  <div id="inventory"></div>
-
-  <p id="status" class="error"></p>
+  
+  <footer>
+    <p>© 2023 Cannabis Inventory System | Professional Cannabis Business Solutions</p>
+  </footer>
 
   <!-- ZXing library -->
   <script src="https://unpkg.com/@zxing/library@latest"></script>
   <script>
     // ===== YOUR APPS SCRIPT WEB APP URL =====
-    const API_URL = "https://script.google.com/macros/s/AKfycbz9KqaEtsPEfnUaWR7feRBg-tEOh1vOLp6OQ0jZzJu8PsaguVE2vKeVIUz1Wik_1Mr4/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbw2B__sKnC-G4Kc88sl_jrdeAgqIY1Qz6CXAHJ7kN9SS-MmLwt3gQRr1PaE_5U7ger_/exec";
 
     let lastScanned = null;
     let streamStopper = null; // to stop camera cleanly
@@ -77,6 +351,7 @@
 
         if (!rearCamera) {
           statusEl.textContent = "No camera found on this device.";
+          statusEl.className = "error";
           return;
         }
 
@@ -87,10 +362,12 @@
             scanResult.textContent = "Scanned: " + lastScanned;
             addBtn.disabled = false;
             statusEl.textContent = "";
+            statusEl.className = "";
           }
           if (err && !(err instanceof ZXing.NotFoundException)) {
             console.error("Scanner error:", err);
             statusEl.textContent = "Scanner error: " + err.message;
+            statusEl.className = "error";
           }
         });
 
@@ -104,6 +381,7 @@
       } catch (error) {
         console.error("Camera init failed:", error);
         statusEl.textContent = "Failed to access camera: " + error.message;
+        statusEl.className = "error";
       }
     }
 
@@ -174,11 +452,13 @@
       addBtn.disabled = false;
       scanResult.textContent = "Scanned manually: " + lastScanned;
       statusEl.textContent = "";
+      statusEl.className = "";
     });
 
     // ===== LOAD INVENTORY =====
     async function loadInventory() {
       statusEl.textContent = "";
+      statusEl.className = "";
       try {
         const res = await fetch(API_URL, { method: "GET" });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
